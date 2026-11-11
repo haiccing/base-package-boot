@@ -13,8 +13,10 @@
 //      committed;
 //   4. the request, completed, into its request/execute: its runtime moves
 //      it to request/done first, when it starts.
-// Its runtime not started here: bare <work>/mrepos/boot/packages/haiccing/
-// base-package-runtime.bundle --work=<work> (printed as `next`).
+// Its runtime not started here (for now): <work>/bare/bin/bare
+// <work>/mrepos/boot/packages/haiccing/base-package-runtime.bundle
+// <work>/mrepos/boot (printed as `next`): from its own packages/, by its
+// directory.
 //   run.js [--work=<folder>] [--sources=folder:<path>|github:<org>]... [--yes]
 //     --work      the work folder: the current one by default
 //     --sources   where packages and Bare come from, in order (github:haiccing
@@ -51,9 +53,10 @@ const args = process.argv.slice(script ? 2 : 1)
 const value = flag => args.filter(a => a.startsWith(`--${flag}=`)).map(a => a.slice(flag.length + 3))
 const work = resolve(value('work')[0] ?? '.')
 const sources = (value('sources').length ? value('sources') : ['github:haiccing']).map(parseSource)
-// A question on a terminal, answered y or n; none without a terminal.
+// A question on a terminal (on stderr: stdout is the record), answered y or n;
+// none without a terminal.
 const ask = process.stdin.isTTY
-  ? q => new Promise(resolve => { process.stdout.write(`${q} [y/N] `); process.stdin.once('data', d => { process.stdin.pause(); resolve(/^y/i.test(d.toString().trim())) }) })
+  ? q => new Promise(resolve => { process.stderr.write(`${q} [y/N] `); process.stdin.once('data', d => { process.stdin.pause(); process.stdin.destroy(); resolve(/^y/i.test(d.toString().trim())) }) })
   : null
 
 // The request: the invocation, as typed (the entry's name, its arguments).
@@ -101,7 +104,9 @@ try {
 
 // 4. The request completed, into the boot mrepo's request/execute.
 const runtime = join(viewOf(work, NAME), 'packages', 'haiccing', 'base-package-runtime.bundle')
-const completed = done({ ok: true, value: { outcomes, next: `${bareOf(work)} ${runtime} --work=${work}` } })
+const completed = done({ ok: true, value: { outcomes, next: `${bareOf(work)} ${runtime} ${viewOf(work, NAME)}` } })
 const repo = await open(work)
 try { await executed({ backend: repo.backend, writer: writer(repo.backend) }, core.key, wrap(`/${EXECUTE}`, completed)) } finally { await repo.close() }
 console.log(JSON.stringify(completed))
+// Done: ended here (nothing left open to keep it alive, a terminal's input included).
+process.exit(0)
