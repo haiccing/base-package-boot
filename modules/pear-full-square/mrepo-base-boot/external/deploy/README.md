@@ -9,21 +9,22 @@ in, in that order, and the child is built at `<parent>/main/<name>/`.
 
 ## Signature
 
-`deploy(exec, { uri, body })`: `uri` is `/<name>`, one segment.
+`deploy(exec, { uri, args })`: `uri` is `/<name>`, one segment.
 
-## Body
+## Arguments
 
-- `package`: the target package, `<org>/<package>`. Required.
+1. The target package, `<org>/<package>`. Required.
 
 ## Returns
 
-`{ deployed, name, package, packages, dir, layers, runtime: { pid } }`.
-The same record, without `deployed`, is written at `/main/<name>.json`.
+`{ deployed, mrepo, package, packages, layers, runtime: { pid } }`. The
+same record, without `deployed`, is the child's shortcut, written at
+`/xpath/<name>/shortcut.json`. `mrepo` is the child's unique URI.
 
 ## Errors
 
 - The child is deployed already, or its folder is in the way.
-- No package in the body; the parent's packages manifest names no store.
+- No package given; the parent's packages manifest names no store.
 - The target lists no packages; its runtime does not start.
 
 ## Design
@@ -32,4 +33,9 @@ The same record, without `deployed`, is written at `/main/<name>.json`.
   structure.
   READMEs are never laid in.
 - The packages are linked individually into the child's `packages/`.
+- The child has no presence in the parent's `main`: its shortcut is all
+  the parent holds of it.
+- The child's unique URI is in its parent's swarm, `<swarm>/<name>`: what
+  the boot mrepo deploys is `local/<name>`. It is written into the child's
+  own runtime layer, `/runtime/mrepo.json`, where it has one.
 - The runtime is started from the child's own packages, by its directory.

@@ -1,4 +1,4 @@
-// deploy(exec, { uri, body: { package } }): the boot protocol's deploy (README.md beside it).
+// deploy(exec, { uri, args: [package] }): the boot protocol's deploy (README.md beside it).
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync } from 'bare-fs'
 import { join, dirname } from 'bare-path'
 import { tmpdir } from 'bare-os'
@@ -8,12 +8,12 @@ import { fetch, structureOf, parseSource } from '../../internal/fetch/index.js'
 import { place } from '../../internal/place/index.js'
 import { child } from '../../internal/child.js'
 
-export async function deploy (exec, { uri, body }) {
+export async function deploy (exec, { uri, args = [] }) {
   const c = child(exec, uri)
   if (await c.recorded()) throw new Error(`deployed already: ${uri}`)
   if (existsSync(c.dir)) throw new Error(`in the way: ${c.dir}`)
-  const target = body?.package
-  if (!target) throw new Error(`no package to deploy ${uri} from (the body's package)`)
+  const [target] = args
+  if (!target) throw new Error(`no package to deploy ${uri} from (its first argument)`)
   // The store and the sources: the mapping the parent's packages manifest records.
   const mine = await exec.read('/packages/manifest.json').then(b => JSON.parse(b.toString()), () => null)
   if (!mine?.store) throw new Error('no store: the parent\'s packages manifest names none')
@@ -37,10 +37,13 @@ export async function deploy (exec, { uri, body }) {
         writeFileSync(join(tmp, p), bytes)
       }
     }
+    // Its identity, in its runtime layer (where it has one): its unique URI.
+    if (existsSync(join(tmp, 'runtime', 'layer.json'))) writeFileSync(join(tmp, 'runtime', 'mrepo.json'), JSON.stringify({ uri: c.mrepo }, null, 2) + '\n')
     mkdirSync(dirname(c.dir), { recursive: true })
     const { layers } = await build({ from: tmp, dir: c.dir, setting: false })
     const { packages } = await place({ dir: c.dir, store, sources, list })
-    const record = { name: c.name, package: target, packages: Object.keys(packages), dir: `main/${c.name}`, layers }
+    // Its shortcut: the link, in the xpath layer; nothing of it in main.
+    const record = { mrepo: c.mrepo, package: target, packages: Object.keys(packages), layers }
     // Its runtime started, from its own packages/ (its pinned runtime), by
     // its directory: its inbox operational. Not when it has no runtime.
     const runtime = join(c.dir, 'packages', 'haiccing', 'base-package-runtime.bundle')
