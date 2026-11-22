@@ -1,8 +1,8 @@
 {
   "package": "haiccing/base-package-boot",
-  "content": "1e4e0bc5d962492a4b6df057eb443de8d2f6b9f8b3b68669fcc64f6b7d1480f1",
+  "content": "5dda4c45baa0299c4d1b80aa720172a6ca158b70c1c755f20d5c070efb996d4a",
   "bare": "v1.36.0",
-  "date": "2026-11-20T11:20:43.098Z",
+  "date": "2026-11-21T01:34:51.126Z",
   "set": "full",
   "ok": true,
   "units": [
@@ -144,8 +144,8 @@
         "total": 18
       },
       "asserts": {
-        "passed": 212,
-        "total": 212
+        "passed": 228,
+        "total": 228
       },
       "failures": []
     },
