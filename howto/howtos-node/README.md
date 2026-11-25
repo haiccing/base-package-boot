@@ -11,21 +11,7 @@ another's: an mrepo inside another's folder is refused.
 
 ## Steps
 
-```sh
-# the howtos node, then the nodes of a how-to's key below it
-haicc . crud/create howtos '{"kind":"howtos"}'
-haicc . crud/create howtos/haiccing/base-package-crud/howto/query
-# the how-to's mrepo: haiccing/base-package-crud/howto/query/boot
-haicc . boot/deploy howtos/haiccing/base-package-crud/howto/query/boot haiccing/base-package-runtime
-# linked at its position
-haicc . crud/read howtos/haiccing/base-package-crud/howto/query/boot
-# inside its folder, by another howtos node: refused (a unique URI is never a prefix of another's)
-haicc . crud/create more '{"kind":"howtos"}'
-haicc . crud/create more/haiccing/base-package-crud/howto/query/boot
-haicc . boot/deploy more/haiccing/base-package-crud/howto/query/boot/inner haiccing/base-package-runtime
-# torn down at its position
-haicc . boot/teardown howtos/haiccing/base-package-crud/howto/query/boot
-```
+The script, [steps.haicc](steps.haicc): each line as typed after `haicc`, what it answers under it; run with `howto/run`, shown here at info extraction.
 
 ## Notes
 

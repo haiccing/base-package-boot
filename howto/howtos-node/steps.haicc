@@ -1,0 +1,21 @@
+# step: the howtos node, then the nodes of a how-to's key below it
+. crud/create howtos '{"kind":"howtos"}'
+# expect: "value":{"kind":"howtos"}
+. crud/create howtos/haiccing/base-package-crud/howto/query
+# expect: "outcome":"created"
+# step: the how-to's mrepo: haiccing/base-package-crud/howto/query/boot
+. boot/deploy howtos/haiccing/base-package-crud/howto/query/boot haiccing/base-package-runtime
+# expect: "mrepo":"haiccing/base-package-crud/howto/query/boot"
+# step: linked at its position
+. crud/read howtos/haiccing/base-package-crud/howto/query/boot
+# expect: "mrepo":"haiccing/base-package-crud/howto/query/boot"
+# step: inside its folder, by another howtos node: refused (a unique URI is never a prefix of another's)
+. crud/create more '{"kind":"howtos"}'
+# expect: "value":{"kind":"howtos"}
+. crud/create more/haiccing/base-package-crud/howto/query/boot
+# expect: "outcome":"created"
+. boot/deploy more/haiccing/base-package-crud/howto/query/boot/inner haiccing/base-package-runtime
+# expect: error:
+# step: torn down at its position
+. boot/teardown howtos/haiccing/base-package-crud/howto/query/boot
+# expect: "tornDown":"howtos/haiccing/base-package-crud/howto/query/boot"

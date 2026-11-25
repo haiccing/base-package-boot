@@ -9,19 +9,7 @@ through its parent by its shortcut.
 
 ## Steps
 
-```sh
-# the host, from the boot mrepo: built from the haicc component, its runtime started
-haicc . boot/deploy host haiccing/base-component-haicc
-# a node, from the host: its package fully qualified, <org>/<package>
-haicc host boot/deploy node-1 haiccing/base-package-runtime
-# read through the host: the request hops at its shortcut
-haicc host/node-1 crud/read .
-# redeployed from the package it came from (or another, named)
-haicc host boot/redeploy node-1
-# torn down: its runtime stopped, it and its shortcut removed
-haicc host boot/teardown node-1
-haicc . boot/teardown host
-```
+The script, [steps.haicc](steps.haicc): each line as typed after `haicc`, what it answers under it; run with `howto/run`, shown here at info extraction.
 
 ## Notes
 

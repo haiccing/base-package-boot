@@ -9,14 +9,7 @@ is made first.
 
 ## Steps
 
-```sh
-# the swarm's node made first, its document saying it is a swarm
-haicc host crud/create swarms/swarm-1 '{"kind":"swarm"}'
-# the node deployed in it: swarm-1/node-1
-haicc host boot/deploy swarms/swarm-1/node-1 haiccing/base-component-haicc
-# torn down at the same position
-haicc host boot/teardown swarms/swarm-1/node-1
-```
+The script, [steps.haicc](steps.haicc): each line as typed after `haicc`, what it answers under it; run with `howto/run`, shown here at info extraction.
 
 ## Notes
 
