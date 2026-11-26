@@ -44,8 +44,8 @@ function execution (dir, files = {}) {
     // the rest of an execution context, standing in: a file that may not
     // be there, the log (kept: entries), a step run as it is
     find: async function (p) { try { return await this.read(p) } catch { return null } },
-    log: function (level, event, data = {}) { (this.entries ??= []).push({ level, event, ...data }) },
-    step: async function (event, data, fn, level = 'verbose') { const r = await fn(); (this.entries ??= []).push({ level, event, ...(typeof data === 'function' ? data(r) : data) }); return r },
+    log: function (level, event, line) { if (typeof line !== 'string') throw new Error('not a log entry: a line'); (this.entries ??= []).push({ level, event, line }) },
+    step: async function (event, line, fn, level = 'verbose') { const r = await fn(); (this.entries ??= []).push({ level, event, line: typeof line === 'function' ? line(r) : line }); return r },
     select: async uri => Object.keys(files).filter(p => p === abs(uri) || p.startsWith(abs(uri) + '/')).map(p => [p, {}]),
     put: (uri, bytes) => { writes.push(['put', abs(uri)]); files[abs(uri)] = Buffer.from(bytes) },
     remove: uri => { writes.push(['remove', abs(uri)]); delete files[abs(uri)] },
@@ -109,7 +109,7 @@ test('deploy: each refusal, before anything is built', async (t) => {
     await t.exception(act('deploy', execution(dir, store).exec, form('host', 'haiccing/p')), /not a position in main: host \(main\/<name>\)/, 'not in main: from the root the layer comes first')
     await t.exception(act('deploy', execution(dir, { ...store, ...LINKED }).exec, form('main/host', 'haiccing/p')), /deployed already: host/, 'a child linked there already, from another package (here none recorded): refused')
     const again = execution(dir, { ...store, ...LINKED, [LOCAL]: B({ package: 'haiccing/p' }) })
-    t.is((await act('deploy', again.exec, form('main/host', 'haiccing/p'))).again, true, 'from the same package: a repeat, allowed, nothing done')
+    t.is(await act('deploy', again.exec, form('main/host', 'haiccing/p')), 'host is deployed already, as local/host, from haiccing/p: nothing done.', 'from the same package: a repeat, allowed, nothing done, said')
     t.alike(again.writes, [], 'nothing written')
     await t.exception(act('deploy', execution(dir, { ...store, '/main/host/data.json': B({}) }).exec, form('main/host', 'haiccing/p')), /host exists locally: the boot protocol cannot target it/, 'data in main at that position: not a target')
     mkdirSync(join(dir, 'mrepos', 'local', 'busy'), { recursive: true })
@@ -131,10 +131,10 @@ test('teardown: a child without a runtime, its folder and its shortcut removed; 
     mkdirSync(folder, { recursive: true })
     writeFileSync(join(folder, 'kept.txt'), 'x')
     const { exec, writes, files } = execution(dir, { ...LINKED, [LOCAL]: B({ package: 'haiccing/p' }) })
-    t.alike(await act('teardown', exec, { uri: ['main', 'host'] }), { tornDown: 'host' }, 'what it returns')
+    t.is(await act('teardown', exec, { uri: ['main', 'host'] }), 'Torn down host (local/host): no runtime of it running, its folder removed, its link out.', 'what it says it did')
     t.absent(existsSync(folder), 'its folder, where it was placed by its unique URI: removed')
     t.alike([writes, Object.keys(files)], [[['remove', SHORTCUT], ['remove', NODE], ['remove', LOCAL]], []], 'its shortcut and its node out of main, its link\'s record out of the links layer')
-    t.alike(await act('teardown', exec, { uri: ['main', 'host'] }), { tornDown: 'host', again: true }, 'torn down already: a repeat, allowed, nothing done')
+    t.is(await act('teardown', exec, { uri: ['main', 'host'] }), 'host is not deployed: nothing torn down.', 'torn down already: a repeat, allowed, nothing done')
     t.ok(exec.entries.some(e => e.level === 'warn' && e.event === 'not deployed'), 'a warning: not deployed')
     await t.exception(act('teardown', execution(dir, { '/main/data/x.json': B({}) }).exec, { uri: ['main', 'data'] }), /data exists locally: the boot protocol cannot target it/, 'data in main there: not a child')
     await t.exception(act('teardown', exec, { uri: ['main', '.'] }), /missing argument: target/, 'the mrepo itself')
