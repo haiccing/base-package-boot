@@ -4,7 +4,7 @@ A child mrepo deployed, read through its parent, redeployed and torn down.
 
 From the boot mrepo (`.`), the host is a child; from the host, a node.
 Each is built from a package's list, placed by its unique URI
-(`local/host`, `local/node-1`), runs its own runtime and is reached
+(`local/host`, `local/peer-1`), runs its own runtime and is reached
 through its parent by its shortcut.
 
 ## Steps

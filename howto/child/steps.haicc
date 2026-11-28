@@ -2,16 +2,16 @@
 . boot/deploy host haiccing/base-component-haicc
 # expect: "deployed":"host"
 # step: a node, from the host: its package fully qualified, <org>/<package>
-host boot/deploy node-1 haiccing/base-package-runtime
-# expect: "deployed":"node-1","mrepo":"local/node-1"
+host boot/deploy peer-1 haiccing/base-package-runtime
+# expect: "deployed":"peer-1","mrepo":"local/peer-1"
 # step: read through the host: the request hops at its shortcut
-host/node-1 crud/read .
+host/peer-1 crud/read .
 # expect: error: no protocol: crud
 # step: redeployed from the package it came from (or another, named)
-host boot/redeploy node-1
-# expect: "node-1"
+host boot/redeploy peer-1
+# expect: "peer-1"
 # step: torn down: its runtime stopped, it and its shortcut removed
-host boot/teardown node-1
-# expect: "node-1"
+host boot/teardown peer-1
+# expect: "peer-1"
 . boot/teardown host
 # expect: "host"

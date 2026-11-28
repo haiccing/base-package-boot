@@ -3,9 +3,9 @@
 # step: the swarm's node made first, its document saying it is a swarm
 host crud/create swarms/swarm-1 '{"kind":"swarm"}'
 # expect: "value":{"kind":"swarm"}
-# step: the node deployed in it: swarm-1/node-1
-host boot/deploy swarms/swarm-1/node-1 haiccing/base-component-haicc
-# expect: "deployed":"swarms/swarm-1/node-1","mrepo":"swarm-1/node-1"
+# step: the peer deployed in it: swarm-1/peer-1
+host boot/deploy swarms/swarm-1/peer-1 haiccing/base-component-haicc
+# expect: "deployed":"swarms/swarm-1/peer-1","mrepo":"swarm-1/peer-1"
 # step: torn down at the same position
-host boot/teardown swarms/swarm-1/node-1
-# expect: swarms/swarm-1/node-1
+host boot/teardown swarms/swarm-1/peer-1
+# expect: swarms/swarm-1/peer-1

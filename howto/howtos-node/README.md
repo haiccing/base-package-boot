@@ -18,5 +18,5 @@ The script, [steps.haicc](steps.haicc): each line as typed after `haicc`, what i
 - **One name below it** is no unique URI: a namespace and a name at
   least.
 - **A swarm in a how-to's namespace**: what a how-to's mrepo deploys is
-  in its namespace, a swarm's nodes too
-  (`.../howto/query/swarm-1/node-1`).
+  in its namespace, a swarm's peers too
+  (`.../howto/query/swarm-1/peer-1`).

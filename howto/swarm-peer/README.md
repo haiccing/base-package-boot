@@ -1,9 +1,9 @@
-# swarm-node
+# swarm-peer
 
-A swarm's node deployed: a child in a swarm of its own rather than its parent's.
+A swarm's peer deployed: a child in a swarm of its own rather than its parent's.
 
 A child is in its parent's swarm (`local`), unless a node above it says
-it is a swarm, `{"kind":"swarm"}`: then it is that swarm's node, its
+it is a swarm, `{"kind":"swarm"}`: then it is that swarm's peer, its
 unique URI `<swarm>/<name>`, by the swarm node's name. The swarm's node
 is made first.
 

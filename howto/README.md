@@ -6,4 +6,4 @@ What can be done with the boot protocol: a how-to each, its steps as typed comma
 
 - [child](child/)
 - [howtos-node](howtos-node/)
-- [swarm-node](swarm-node/)
+- [swarm-peer](swarm-peer/)
